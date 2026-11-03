@@ -1,0 +1,27 @@
+name: GitHub release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run prepublishOnly
+      - name: Check tag and runtime version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node --input-type=module -e "import fs from 'node:fs'; import { SDK_VERSION } from './dist/index.js'; const p=JSON.parse(fs.readFileSync('package.json')); if(process.env.RELEASE_TAG !== 'v'+p.version || SDK_VERSION !== p.version) process.exit(1)"
+      - run: npm pack
+      - name: Create release with SDK archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" vidplate-api-*.tgz --verify-tag --title "VidPlate Node SDK $GITHUB_REF_NAME" --notes-file CHANGELOG.md

@@ -1,0 +1,52 @@
+{
+  "name": "@vidplate/api",
+  "version": "0.1.0",
+  "description": "Official Node.js and TypeScript client for the VidPlate API: render video and image templates, edit video and receive webhooks.",
+  "license": "MIT",
+  "keywords": [
+    "vidplate",
+    "video",
+    "rendering",
+    "video api",
+    "templates",
+    "api client"
+  ],
+  "homepage": "https://vidplate.app/developers/docs",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test test/smoke.test.ts",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TomVidPlate/vidplate-node-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TomVidPlate/vidplate-node-sdk/issues"
+  }
+}
