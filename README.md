@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/vidplate-api-dark.svg">
+  <img src="docs/assets/vidplate-api-light.svg" width="250" alt="VidPlate API">
+</picture>
+
 # @vidplate/api (Node.js / TypeScript)
 
 **Install:** `npm install @vidplate/api`. Official SDK source, examples and releases. MIT licence.
@@ -12,6 +17,21 @@ A small, typed client for the VidPlate API (`https://api.vidplate.app/v1`). Ever
 - `webhooks.verify()` / `webhooks.constructEvent()` for the `VidPlate-Signature` header
 
 Node 18 or newer (uses the global `fetch`). No runtime dependencies.
+
+## How it works
+
+![Your server sends a template request, VidPlate queues the job, your Browser Node renders it, and your application collects the files.](docs/assets/render-workflow.svg)
+
+Design a template, fill its fields with JSON and render on your connected Browser Node. VidPlate handles the queue and signed completion webhooks. See the [quick start](https://vidplate.app/developers/docs/quick-start) and [Browser Node guide](https://vidplate.app/developers/browser-nodes).
+
+<details>
+<summary><strong>See the Browser Node interface</strong></summary>
+
+![Browser Node dashboard showing job counts, approved local-media folders and saved-template-file settings.](docs/assets/browser-node-example.png)
+
+Actual application UI captured with fictional demo data. The screenshot includes the separately documented [local-media beta](https://vidplate.app/developers/docs/browser-nodes#local-media). Local-media methods are not included in SDK 0.1.0; use the documented REST endpoints for that workflow. Standard template rendering uses the workflow above.
+
+</details>
 
 ## Install from the repo
 
