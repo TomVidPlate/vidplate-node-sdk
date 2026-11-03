@@ -199,10 +199,10 @@ export type RenderOutput = {
     preset?: string
     /** Video: the frame rate. Null until the render starts when none was asked for (the template's own). */
     fps?: number | null
+    /** Video only. ProRes profiles export original template frames to MOV, up to 512 MB per output. */
+    codec?: "h264" | "hevc" | "vp9" | "av1" | "prores_422" | "prores_422_hq"
     /** Video only. */
-    codec?: "h264" | "hevc" | "vp9" | "av1"
-    /** Video only. */
-    container?: "mp4" | "webm"
+    container?: "mp4" | "webm" | "mov"
     /** Video only. */
     quality?: "standard" | "high" | "max"
     /** Video: the bitrate the file was encoded at, reported when it finished. Null until then. */
@@ -220,7 +220,7 @@ export type RenderOutput = {
     image_format?: "png" | "jpg" | "webp"
     /** Static jpg or webp only. */
     image_quality?: number | null
-    mime_type?: "video/mp4" | "video/webm" | "image/png" | "image/jpeg" | "image/webp"
+    mime_type?: "video/mp4" | "video/webm" | "video/quicktime" | "image/png" | "image/jpeg" | "image/webp"
     status?: "queued" | "waiting_for_node" | "rendering" | "completed" | "failed" | "cancelled" | "expired"
     /** Failed outputs only. file_size_limit_unreachable: the file was still over max_file_size_mb after a second encode at a lower bitrate. */
     failure_code?: "render_failed" | "file_size_limit_unreachable"
@@ -322,8 +322,8 @@ export type RenderNode = {
         max_output_megapixels?: number | null
         /** The video codecs the node can encode, with the largest size and frame rate it confirmed and whether a hardware encoder does it. Null until the node reports (such a node takes H.264 outputs only). */
         video_codecs?: Array<{
-            codec?: "h264" | "hevc" | "vp9" | "av1"
-            container?: "mp4" | "webm"
+            codec?: "h264" | "hevc" | "vp9" | "av1" | "prores_422" | "prores_422_hq"
+            container?: "mp4" | "webm" | "mov"
             max_resolution?: string | null
             max_fps?: number | null
             hardware?: boolean
@@ -772,8 +772,8 @@ export type CreateRenderBody = {
         resolution?: "720p" | "1080p" | "1440p" | "2160p" | "4k" | "4K"
         /** Video only. Frames per second. The motion keeps the same timing in seconds; only the number of frames changes. Default: the template's own frame rate. */
         fps?: 24 | 25 | 30 | 50 | 60
-        /** Video only. h264 (the default) and hevc are delivered as MP4 with AAC audio; vp9 and av1 as WebM with Opus audio. */
-        codec?: "h264" | "hevc" | "vp9" | "av1"
+        /** Video only. h264 (default) and hevc: MP4/AAC. vp9 and av1: WebM/Opus. prores_422 and prores_422_hq: original template frames in MOV/16-bit PCM, SDR, 512 MB maximum per output. ProRes does not accept preset, quality, bitrate or file-size controls. */
+        codec?: "h264" | "hevc" | "vp9" | "av1" | "prores_422" | "prores_422_hq"
         /** Video only. standard (the default) is the bitrate every render has always used; high and max raise it. Ignored when video_bitrate_kbps is set. */
         quality?: "standard" | "high" | "max"
         /** Video only. An exact video bitrate in kilobits a second, 250 up to 20,000 (720p), 40,000 (1080p), 60,000 (1440p) or 100,000 (2160p). Overrides quality. Cannot be combined with max_file_size_mb. */
@@ -866,8 +866,8 @@ export type EstimateRenderBody = {
         resolution?: "720p" | "1080p" | "1440p" | "2160p" | "4k" | "4K"
         /** Video only. Frames per second. The motion keeps the same timing in seconds; only the number of frames changes. Default: the template's own frame rate. */
         fps?: 24 | 25 | 30 | 50 | 60
-        /** Video only. h264 (the default) and hevc are delivered as MP4 with AAC audio; vp9 and av1 as WebM with Opus audio. */
-        codec?: "h264" | "hevc" | "vp9" | "av1"
+        /** Video only. h264 (default) and hevc: MP4/AAC. vp9 and av1: WebM/Opus. prores_422 and prores_422_hq: original template frames in MOV/16-bit PCM, SDR, 512 MB maximum per output. ProRes does not accept preset, quality, bitrate or file-size controls. */
+        codec?: "h264" | "hevc" | "vp9" | "av1" | "prores_422" | "prores_422_hq"
         /** Video only. standard (the default) is the bitrate every render has always used; high and max raise it. Ignored when video_bitrate_kbps is set. */
         quality?: "standard" | "high" | "max"
         /** Video only. An exact video bitrate in kilobits a second, 250 up to 20,000 (720p), 40,000 (1080p), 60,000 (1440p) or 100,000 (2160p). Overrides quality. Cannot be combined with max_file_size_mb. */
@@ -945,8 +945,8 @@ export type CreateRenderBatchBody = {
             resolution?: "720p" | "1080p" | "1440p" | "2160p" | "4k" | "4K"
             /** Video only. Frames per second. The motion keeps the same timing in seconds; only the number of frames changes. Default: the template's own frame rate. */
             fps?: 24 | 25 | 30 | 50 | 60
-            /** Video only. h264 (the default) and hevc are delivered as MP4 with AAC audio; vp9 and av1 as WebM with Opus audio. */
-            codec?: "h264" | "hevc" | "vp9" | "av1"
+            /** Video only. h264 (default) and hevc: MP4/AAC. vp9 and av1: WebM/Opus. prores_422 and prores_422_hq: original template frames in MOV/16-bit PCM, SDR, 512 MB maximum per output. ProRes does not accept preset, quality, bitrate or file-size controls. */
+            codec?: "h264" | "hevc" | "vp9" | "av1" | "prores_422" | "prores_422_hq"
             /** Video only. standard (the default) is the bitrate every render has always used; high and max raise it. Ignored when video_bitrate_kbps is set. */
             quality?: "standard" | "high" | "max"
             /** Video only. An exact video bitrate in kilobits a second, 250 up to 20,000 (720p), 40,000 (1080p), 60,000 (1440p) or 100,000 (2160p). Overrides quality. Cannot be combined with max_file_size_mb. */
@@ -1015,8 +1015,8 @@ export type CreateRenderBatchBody = {
             resolution?: "720p" | "1080p" | "1440p" | "2160p" | "4k" | "4K"
             /** Video only. Frames per second. The motion keeps the same timing in seconds; only the number of frames changes. Default: the template's own frame rate. */
             fps?: 24 | 25 | 30 | 50 | 60
-            /** Video only. h264 (the default) and hevc are delivered as MP4 with AAC audio; vp9 and av1 as WebM with Opus audio. */
-            codec?: "h264" | "hevc" | "vp9" | "av1"
+            /** Video only. h264 (default) and hevc: MP4/AAC. vp9 and av1: WebM/Opus. prores_422 and prores_422_hq: original template frames in MOV/16-bit PCM, SDR, 512 MB maximum per output. ProRes does not accept preset, quality, bitrate or file-size controls. */
+            codec?: "h264" | "hevc" | "vp9" | "av1" | "prores_422" | "prores_422_hq"
             /** Video only. standard (the default) is the bitrate every render has always used; high and max raise it. Ignored when video_bitrate_kbps is set. */
             quality?: "standard" | "high" | "max"
             /** Video only. An exact video bitrate in kilobits a second, 250 up to 20,000 (720p), 40,000 (1080p), 60,000 (1440p) or 100,000 (2160p). Overrides quality. Cannot be combined with max_file_size_mb. */
@@ -1627,7 +1627,7 @@ export type CreateMediaJobBody = {
         resolution?: "720p" | "1080p" | "1440p" | "2160p" | "4k" | "4K"
         /** source (the default: the input's own rate, 29.97 included), or 24, 25, 30, 50 or 60. */
         fps?: (24 | 25 | 30 | 50 | 60) | "source"
-        /** h264 (default), hevc, vp9 or av1 for video; gif or webp for an animated image (up to 30 seconds, 720 pixels on the short edge and 30 fps; defaults 15 fps and 480 pixels). */
+        /** h264 (default), hevc, vp9 or av1 for video; gif or webp for an animated image (up to 30 seconds, 720 pixels on the short edge and 30 fps; defaults 15 fps and 480 pixels). ProRes export is available on original template renders only. */
         codec?: "h264" | "hevc" | "vp9" | "av1" | "gif" | "webp"
         /** Video only. standard (the default) is the bitrate every render has always used; high and max raise it. Ignored when video_bitrate_kbps is set. */
         quality?: "standard" | "high" | "max"
@@ -1976,7 +1976,7 @@ export type EstimateMediaJobBody = {
         resolution?: "720p" | "1080p" | "1440p" | "2160p" | "4k" | "4K"
         /** source (the default: the input's own rate, 29.97 included), or 24, 25, 30, 50 or 60. */
         fps?: (24 | 25 | 30 | 50 | 60) | "source"
-        /** h264 (default), hevc, vp9 or av1 for video; gif or webp for an animated image (up to 30 seconds, 720 pixels on the short edge and 30 fps; defaults 15 fps and 480 pixels). */
+        /** h264 (default), hevc, vp9 or av1 for video; gif or webp for an animated image (up to 30 seconds, 720 pixels on the short edge and 30 fps; defaults 15 fps and 480 pixels). ProRes export is available on original template renders only. */
         codec?: "h264" | "hevc" | "vp9" | "av1" | "gif" | "webp"
         /** Video only. standard (the default) is the bitrate every render has always used; high and max raise it. Ignored when video_bitrate_kbps is set. */
         quality?: "standard" | "high" | "max"

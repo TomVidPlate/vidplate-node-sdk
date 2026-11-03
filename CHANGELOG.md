@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 - 2026-11-03
+
+- Typed ProRes 422 and 422 HQ template masters, MOV outputs and node capabilities.
+- Added a 4K ProRes request example. The initial export uses original 8-bit SDR canvas frames, PCM audio and a 512 MiB output limit.
+- ProRes is restricted to original template renders; media editing and local-media operations are unchanged.
+
 ## 0.2.0 - 2026-11-03
 
 - Typed static image editing and collage requests: crop/resize, rotation/flips, photo adjustments and non-AI auto enhance.
