@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 - 2026-11-03
+
+- Added ProRes 4444 MOV with transparency to template output types.
+- Added ProRes 422, 422 HQ and 4444 to video media-job conversion types.
+- Added a file-conversion example. ProRes exports use 10-bit SDR files; source decoding and effects can limit retained precision. Refresh Browser Node tabs before use.
+- ProRes outputs have a 512 MiB cap. ProRes inputs and local-media ProRes jobs remain unsupported.
+
 ## 0.2.1 - 2026-11-03
 
 - Typed ProRes 422 and 422 HQ template masters, MOV outputs and node capabilities.
