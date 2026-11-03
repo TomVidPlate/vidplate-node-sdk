@@ -3,7 +3,7 @@
 
 import type { RequestOptions } from '../options.ts'
 
-export const API_VERSION = "2026.11.02"
+export const API_VERSION = "2026.11.03"
 export const DEFAULT_BASE_URL = "https://api.vidplate.app/v1"
 
 /** Every status value the spec lists, per schema (from components.schemas.<Name>.properties.status.enum). */
@@ -396,7 +396,7 @@ export type WebhookEndpoint = {
     id?: string
     url?: string
     description?: string | null
-    events?: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress">
+    events?: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired">
     enabled?: boolean
     disabled_reason?: string | null
     last_success_at?: string | null
@@ -410,7 +410,7 @@ export type WebhookEndpoint = {
 export type WebhookEvent = {
     /** evt_...: de-duplicate on this. */
     id?: string
-    type?: "render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "ping"
+    type?: "render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired" | "ping"
     created_at?: string
     api_version?: "v1"
     data?: { [key: string]: unknown }
@@ -607,7 +607,7 @@ export type WebhookEndpointList = {
 export type MediaJob = {
     object?: "media_job"
     id?: string
-    operation?: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
+    operation?: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
     status?: "queued" | "waiting_for_input" | "waiting_for_node" | "rendering" | "completed" | "failed" | "expired" | "cancelled"
     waiting_reason?: string
     created_at?: string | null
@@ -633,7 +633,7 @@ export type MediaJob = {
         id?: string
         index?: number
         settings_index?: number
-        kind?: "video" | "animated_image"
+        kind?: "video" | "animated_image" | "image"
         status?: "queued" | "waiting_for_input" | "waiting_for_node" | "rendering" | "completed" | "failed" | "expired" | "cancelled"
         width?: number | null
         height?: number | null
@@ -1119,7 +1119,7 @@ export type ListWebhookEndpointsResponse = WebhookEndpointList
 export type CreateWebhookEndpointBody = {
     /** HTTPS only. Private, loopback and VidPlate addresses are refused. */
     url: string
-    events: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress">
+    events: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired">
     description?: string | null
 }
 
@@ -1140,7 +1140,7 @@ export type UpdateWebhookEndpointPathParams = {
 export type UpdateWebhookEndpointBody = {
     /** HTTPS only. Private, loopback and VidPlate addresses are refused. */
     url?: string
-    events?: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress">
+    events?: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired">
     description?: string | null
     enabled?: boolean
 }
@@ -1275,10 +1275,111 @@ export type TestStorageDestinationPathParams = {
 
 export type TestStorageDestinationResponse = StorageDestinationTest
 
+export type RegisterLocalMediaNodeBody = {
+    name: string
+    /** Starter: exactly one input and one output root. Growth and above: up to 16 approved roots. */
+    roots: Array<{
+        id: string
+        access: "read" | "write"
+    }>
+}
+
+export type RegisterLocalMediaNodeResponse = { [key: string]: unknown }
+
+export type ListLocalMediaNodesResponse = { [key: string]: unknown }
+
+export type RevokeLocalMediaNodePathParams = {
+    node_id: string
+}
+
+export type RevokeLocalMediaNodeBody = { [key: string]: unknown }
+
+export type RevokeLocalMediaNodeResponse = { [key: string]: unknown }
+
+export type DisableLocalMediaNodePathParams = {
+    node_id: string
+}
+
+export type DisableLocalMediaNodeBody = { [key: string]: unknown }
+
+export type DisableLocalMediaNodeResponse = { [key: string]: unknown }
+
+export type CreateLocalMediaJobBody = {
+    node_id: string
+    inputs: Array<{
+        root_id: string
+        path: string
+        sha256: string
+        start_seconds: number
+        end_seconds: number
+    }>
+    output: {
+        root_id: string
+        path: string
+        width: number
+        height: number
+        framing?: "fit" | "crop"
+        /** Growth and above only. Create missing output subfolders inside the approved output root. Starter uses a filename directly in its fixed output folder. Input folders must already exist. */
+        create_directories?: boolean
+    }
+}
+
+export type CreateLocalMediaJobResponse = { [key: string]: unknown }
+
+export type GetLocalMediaJobPathParams = {
+    job_id: string
+}
+
+export type GetLocalMediaJobResponse = { [key: string]: unknown }
+
+export type CancelLocalMediaJobPathParams = {
+    job_id: string
+}
+
+export type CancelLocalMediaJobBody = { [key: string]: unknown }
+
+export type CancelLocalMediaJobResponse = { [key: string]: unknown }
+
+export type ClaimLocalMediaJobPathParams = {
+    node_id: string
+}
+
+export type ClaimLocalMediaJobBody = { [key: string]: unknown }
+
+export type ClaimLocalMediaJobResponse = { [key: string]: unknown }
+
+export type HeartbeatLocalMediaJobPathParams = {
+    node_id: string
+    job_id: string
+}
+
+export type HeartbeatLocalMediaJobBody = {
+    lease_token: string
+}
+
+export type HeartbeatLocalMediaJobResponse = { [key: string]: unknown }
+
+export type CompleteLocalMediaJobPathParams = {
+    node_id: string
+    job_id: string
+}
+
+export type CompleteLocalMediaJobBody = {
+    lease_token: string
+    status: "completed" | "failed"
+    result?: {
+        bytes: number
+        sha256: string
+        duration_seconds: number
+    }
+}
+
+export type CompleteLocalMediaJobResponse = { [key: string]: unknown }
+
 export type CreateMediaJobBody = {
-    /** The tool. trim, crop, resize, combine, compress, convert and speed are available; the others are coming. */
-    operation: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
-    /** The sources. One for every operation except combine (2 to 20). */
+    /** Video edits, rotate/flip, overlays, music, LUTs, frame grabs, contact sheets, static image editing and collages. */
+    operation: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
+    /** The sources. One for most operations; combine takes 2 to 20 videos, image_collage takes up to 20 images. */
     inputs: Array<{
         /** A ready upload (POST /uploads). Video is probed when the upload is completed. */
         upload_id?: string
@@ -1412,22 +1513,102 @@ export type CreateMediaJobBody = {
         /** Blend the sound across each transition. Default true when there is a transition. */
         audio_crossfade?: boolean
     }
-    /** Logos, watermarks and text. Not available yet. */
-    overlays?: { [key: string]: unknown } | Array<unknown>
+    image?: {
+        auto_enhance?: boolean
+        adjustments?: {
+            contrast?: number
+            highlights?: number
+            shadows?: number
+            whites?: number
+            blacks?: number
+            temperature?: number
+            tint?: number
+            saturation?: number
+            vibrance?: number
+            texture?: number
+            clarity?: number
+            dehaze?: number
+            vignette?: number
+            exposure?: number
+            sharpening?: number
+            noise_reduction?: number
+            grain?: number
+        }
+        crop?: {
+            /** Left, after rotation. */
+            x: number
+            /** Top, after rotation. */
+            y: number
+            width: number
+            height: number
+        }
+    }
+    collage?: {
+        columns?: number
+        gap?: number
+        background?: string
+        fit?: "crop" | "fit"
+    }
+    overlays?: Array<{
+        type: "image" | "text"
+        /** A ready PNG upload in this workspace. */
+        upload_id?: string
+        text?: string
+        /** Left edge as an output fraction. Default 0.05. */
+        x?: number
+        /** Top edge as an output fraction. Default 0.05. */
+        y?: number
+        width?: number
+        height?: number
+        opacity?: number
+        /** Output timeline start, default 0. */
+        start_seconds?: number
+        end_seconds?: number
+        font_size?: number
+        colour?: string
+        background?: string
+    }>
+    transform?: {
+        rotate?: 0 | 90 | 180 | 270
+        flip_horizontal?: boolean
+        flip_vertical?: boolean
+    }
+    lut?: {
+        /** SDR 3D .cube contents, size 2 to 65 and standard 0 to 1 domain. */
+        cube: string
+        intensity?: number
+    }
     /** A clip before the main video. Not available yet. */
     intro?: { [key: string]: unknown } | Array<unknown>
     /** A clip after the main video. Not available yet. */
     outro?: { [key: string]: unknown } | Array<unknown>
     /** Not available yet. */
     captions?: { [key: string]: unknown } | Array<unknown>
-    /** Music, ducking, loudness and extract audio. Not available yet. */
-    audio?: { [key: string]: unknown } | Array<unknown>
+    audio?: {
+        /** A ready audio upload. */
+        upload_id: string
+        mode?: "mix" | "replace"
+        volume?: number
+        loop?: boolean
+        /** Start on the output timeline. */
+        start_seconds?: number
+        fade_in_seconds?: number
+        fade_out_seconds?: number
+    }
     /** Use combine.transition. Not available yet. */
     transitions?: { [key: string]: unknown } | Array<unknown>
-    /** Frame grabs. Not available yet. */
-    frames?: { [key: string]: unknown } | Array<unknown>
-    /** Contact sheets. Not available yet. */
-    contact_sheet?: { [key: string]: unknown } | Array<unknown>
+    frames?: {
+        times_seconds: Array<number>
+        format?: "png" | "jpg" | "webp"
+        quality?: number
+    }
+    contact_sheet?: {
+        times_seconds: Array<number>
+        columns?: number
+        labels?: boolean
+        format?: "png" | "jpg" | "webp"
+        quality?: number
+    }
     /** Scene detection. Not available yet. */
     scene_detect?: { [key: string]: unknown } | Array<unknown>
     /** Split. Not available yet. */
@@ -1467,6 +1648,8 @@ export type CreateMediaJobBody = {
             /** Audio bitrate, 96 to 320 (default 192). AAC in MP4, Opus in WebM. */
             bitrate_kbps?: number
         }
+        image_format?: "png" | "jpg" | "webp"
+        image_quality?: number
         /** How the picture fills an output of another shape. crop (the default): fill the frame and cut the overflow, centred on focal_point, or following focal_points over time. fit: the whole picture, with colour or blurred padding. */
         framing?: {
             mode?: "crop" | "fit"
@@ -1524,7 +1707,7 @@ export type CreateMediaJobBody = {
 export type CreateMediaJobResponse = MediaJob
 
 export type ListMediaJobsQuery = {
-    operation?: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
+    operation?: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
     status?: "queued" | "waiting_for_input" | "waiting_for_node" | "rendering" | "completed" | "failed" | "expired" | "cancelled"
     external_reference?: string
     created_after?: string
@@ -1543,9 +1726,9 @@ export type ListMediaJobsResponse = {
 }
 
 export type EstimateMediaJobBody = {
-    /** The tool. trim, crop, resize, combine, compress, convert and speed are available; the others are coming. */
-    operation: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
-    /** The sources. One for every operation except combine (2 to 20). */
+    /** Video edits, rotate/flip, overlays, music, LUTs, frame grabs, contact sheets, static image editing and collages. */
+    operation: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
+    /** The sources. One for most operations; combine takes 2 to 20 videos, image_collage takes up to 20 images. */
     inputs: Array<{
         /** A ready upload (POST /uploads). Video is probed when the upload is completed. */
         upload_id?: string
@@ -1679,22 +1862,102 @@ export type EstimateMediaJobBody = {
         /** Blend the sound across each transition. Default true when there is a transition. */
         audio_crossfade?: boolean
     }
-    /** Logos, watermarks and text. Not available yet. */
-    overlays?: { [key: string]: unknown } | Array<unknown>
+    image?: {
+        auto_enhance?: boolean
+        adjustments?: {
+            contrast?: number
+            highlights?: number
+            shadows?: number
+            whites?: number
+            blacks?: number
+            temperature?: number
+            tint?: number
+            saturation?: number
+            vibrance?: number
+            texture?: number
+            clarity?: number
+            dehaze?: number
+            vignette?: number
+            exposure?: number
+            sharpening?: number
+            noise_reduction?: number
+            grain?: number
+        }
+        crop?: {
+            /** Left, after rotation. */
+            x: number
+            /** Top, after rotation. */
+            y: number
+            width: number
+            height: number
+        }
+    }
+    collage?: {
+        columns?: number
+        gap?: number
+        background?: string
+        fit?: "crop" | "fit"
+    }
+    overlays?: Array<{
+        type: "image" | "text"
+        /** A ready PNG upload in this workspace. */
+        upload_id?: string
+        text?: string
+        /** Left edge as an output fraction. Default 0.05. */
+        x?: number
+        /** Top edge as an output fraction. Default 0.05. */
+        y?: number
+        width?: number
+        height?: number
+        opacity?: number
+        /** Output timeline start, default 0. */
+        start_seconds?: number
+        end_seconds?: number
+        font_size?: number
+        colour?: string
+        background?: string
+    }>
+    transform?: {
+        rotate?: 0 | 90 | 180 | 270
+        flip_horizontal?: boolean
+        flip_vertical?: boolean
+    }
+    lut?: {
+        /** SDR 3D .cube contents, size 2 to 65 and standard 0 to 1 domain. */
+        cube: string
+        intensity?: number
+    }
     /** A clip before the main video. Not available yet. */
     intro?: { [key: string]: unknown } | Array<unknown>
     /** A clip after the main video. Not available yet. */
     outro?: { [key: string]: unknown } | Array<unknown>
     /** Not available yet. */
     captions?: { [key: string]: unknown } | Array<unknown>
-    /** Music, ducking, loudness and extract audio. Not available yet. */
-    audio?: { [key: string]: unknown } | Array<unknown>
+    audio?: {
+        /** A ready audio upload. */
+        upload_id: string
+        mode?: "mix" | "replace"
+        volume?: number
+        loop?: boolean
+        /** Start on the output timeline. */
+        start_seconds?: number
+        fade_in_seconds?: number
+        fade_out_seconds?: number
+    }
     /** Use combine.transition. Not available yet. */
     transitions?: { [key: string]: unknown } | Array<unknown>
-    /** Frame grabs. Not available yet. */
-    frames?: { [key: string]: unknown } | Array<unknown>
-    /** Contact sheets. Not available yet. */
-    contact_sheet?: { [key: string]: unknown } | Array<unknown>
+    frames?: {
+        times_seconds: Array<number>
+        format?: "png" | "jpg" | "webp"
+        quality?: number
+    }
+    contact_sheet?: {
+        times_seconds: Array<number>
+        columns?: number
+        labels?: boolean
+        format?: "png" | "jpg" | "webp"
+        quality?: number
+    }
     /** Scene detection. Not available yet. */
     scene_detect?: { [key: string]: unknown } | Array<unknown>
     /** Split. Not available yet. */
@@ -1734,6 +1997,8 @@ export type EstimateMediaJobBody = {
             /** Audio bitrate, 96 to 320 (default 192). AAC in MP4, Opus in WebM. */
             bitrate_kbps?: number
         }
+        image_format?: "png" | "jpg" | "webp"
+        image_quality?: number
         /** How the picture fills an output of another shape. crop (the default): fill the frame and cut the overflow, centred on focal_point, or following focal_points over time. fit: the whole picture, with colour or blurred padding. */
         framing?: {
             mode?: "crop" | "fit"
@@ -2579,6 +2844,192 @@ export const OPERATIONS = {
         "successStatus": 200,
         "extensions": {}
     },
+    registerLocalMediaNode: {
+        "method": "POST",
+        "path": "/local-media/nodes",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true,
+        "bodyRequired": true,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Pair a dedicated local-media node",
+        "deprecated": false,
+        "scopes": [
+            "local_media:node"
+        ],
+        "successStatus": 201,
+        "extensions": {}
+    },
+    listLocalMediaNodes: {
+        "method": "GET",
+        "path": "/local-media/nodes",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false,
+        "bodyRequired": false,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "List approved local-media nodes and root IDs",
+        "deprecated": false,
+        "scopes": [
+            "local_media:read"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    revokeLocalMediaNode: {
+        "method": "POST",
+        "path": "/local-media/nodes/{node_id}/revoke",
+        "pathParams": [
+            "node_id"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "bodyRequired": true,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Disconnect a local-media node",
+        "deprecated": false,
+        "scopes": [
+            "local_media:node"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    disableLocalMediaNode: {
+        "method": "POST",
+        "path": "/local-media/nodes/{node_id}/disable",
+        "pathParams": [
+            "node_id"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "bodyRequired": true,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Revoke a lost local node from an integration key",
+        "deprecated": false,
+        "scopes": [
+            "local_media:write"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    createLocalMediaJob: {
+        "method": "POST",
+        "path": "/local-media/jobs",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true,
+        "bodyRequired": true,
+        "idempotency": "required",
+        "tag": "Media jobs",
+        "summary": "Render local clips to a local MP4",
+        "deprecated": false,
+        "scopes": [
+            "local_media:write"
+        ],
+        "successStatus": 202,
+        "extensions": {}
+    },
+    getLocalMediaJob: {
+        "method": "GET",
+        "path": "/local-media/jobs/{job_id}",
+        "pathParams": [
+            "job_id"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "bodyRequired": false,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Read local job status and output metadata",
+        "deprecated": false,
+        "scopes": [
+            "local_media:read"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    cancelLocalMediaJob: {
+        "method": "POST",
+        "path": "/local-media/jobs/{job_id}/cancel",
+        "pathParams": [
+            "job_id"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "bodyRequired": true,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Cancel a local job",
+        "deprecated": false,
+        "scopes": [
+            "local_media:write"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    claimLocalMediaJob: {
+        "method": "POST",
+        "path": "/local-media/nodes/{node_id}/claim",
+        "pathParams": [
+            "node_id"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "bodyRequired": true,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Claim a job for this paired node",
+        "deprecated": false,
+        "scopes": [
+            "local_media:node"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    heartbeatLocalMediaJob: {
+        "method": "POST",
+        "path": "/local-media/nodes/{node_id}/jobs/{job_id}/heartbeat",
+        "pathParams": [
+            "node_id",
+            "job_id"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "bodyRequired": true,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Renew a local job lease",
+        "deprecated": false,
+        "scopes": [
+            "local_media:node"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    completeLocalMediaJob: {
+        "method": "POST",
+        "path": "/local-media/nodes/{node_id}/jobs/{job_id}/complete",
+        "pathParams": [
+            "node_id",
+            "job_id"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "bodyRequired": true,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Report a local output without uploading its bytes",
+        "deprecated": false,
+        "scopes": [
+            "local_media:node"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
     createMediaJob: {
         "method": "POST",
         "path": "/media-jobs",
@@ -3079,6 +3530,86 @@ export interface OperationTypes {
         queryRequired: false
         bodyRequired: false
     }
+    registerLocalMediaNode: {
+        path: never
+        query: never
+        body: RegisterLocalMediaNodeBody
+        response: RegisterLocalMediaNodeResponse
+        queryRequired: false
+        bodyRequired: true
+    }
+    listLocalMediaNodes: {
+        path: never
+        query: never
+        body: never
+        response: ListLocalMediaNodesResponse
+        queryRequired: false
+        bodyRequired: false
+    }
+    revokeLocalMediaNode: {
+        path: RevokeLocalMediaNodePathParams
+        query: never
+        body: RevokeLocalMediaNodeBody
+        response: RevokeLocalMediaNodeResponse
+        queryRequired: false
+        bodyRequired: true
+    }
+    disableLocalMediaNode: {
+        path: DisableLocalMediaNodePathParams
+        query: never
+        body: DisableLocalMediaNodeBody
+        response: DisableLocalMediaNodeResponse
+        queryRequired: false
+        bodyRequired: true
+    }
+    createLocalMediaJob: {
+        path: never
+        query: never
+        body: CreateLocalMediaJobBody
+        response: CreateLocalMediaJobResponse
+        queryRequired: false
+        bodyRequired: true
+    }
+    getLocalMediaJob: {
+        path: GetLocalMediaJobPathParams
+        query: never
+        body: never
+        response: GetLocalMediaJobResponse
+        queryRequired: false
+        bodyRequired: false
+    }
+    cancelLocalMediaJob: {
+        path: CancelLocalMediaJobPathParams
+        query: never
+        body: CancelLocalMediaJobBody
+        response: CancelLocalMediaJobResponse
+        queryRequired: false
+        bodyRequired: true
+    }
+    claimLocalMediaJob: {
+        path: ClaimLocalMediaJobPathParams
+        query: never
+        body: ClaimLocalMediaJobBody
+        response: ClaimLocalMediaJobResponse
+        queryRequired: false
+        bodyRequired: true
+    }
+    heartbeatLocalMediaJob: {
+        path: HeartbeatLocalMediaJobPathParams
+        query: never
+        body: HeartbeatLocalMediaJobBody
+        response: HeartbeatLocalMediaJobResponse
+        queryRequired: false
+        bodyRequired: true
+    }
+    completeLocalMediaJob: {
+        path: CompleteLocalMediaJobPathParams
+        query: never
+        body: CompleteLocalMediaJobBody
+        response: CompleteLocalMediaJobResponse
+        queryRequired: false
+        bodyRequired: true
+    }
     createMediaJob: {
         path: never
         query: never
@@ -3349,6 +3880,57 @@ export interface OperationMethods {
      * POST /storage-destinations/{destination_id}/test
      */
     testStorageDestination(destinationId: string, options?: RequestOptions): Promise<TestStorageDestinationResponse>
+    /**
+     * Pair a dedicated local-media node
+     * POST /local-media/nodes
+     */
+    registerLocalMediaNode(body: RegisterLocalMediaNodeBody, options?: RequestOptions): Promise<RegisterLocalMediaNodeResponse>
+    /**
+     * List approved local-media nodes and root IDs
+     * GET /local-media/nodes
+     */
+    listLocalMediaNodes(options?: RequestOptions): Promise<ListLocalMediaNodesResponse>
+    /**
+     * Disconnect a local-media node
+     * POST /local-media/nodes/{node_id}/revoke
+     */
+    revokeLocalMediaNode(nodeId: string, body: RevokeLocalMediaNodeBody, options?: RequestOptions): Promise<RevokeLocalMediaNodeResponse>
+    /**
+     * Revoke a lost local node from an integration key
+     * POST /local-media/nodes/{node_id}/disable
+     */
+    disableLocalMediaNode(nodeId: string, body: DisableLocalMediaNodeBody, options?: RequestOptions): Promise<DisableLocalMediaNodeResponse>
+    /**
+     * Render local clips to a local MP4
+     * POST /local-media/jobs
+     * Idempotency-Key: required (sent automatically).
+     */
+    createLocalMediaJob(body: CreateLocalMediaJobBody, options?: RequestOptions): Promise<CreateLocalMediaJobResponse>
+    /**
+     * Read local job status and output metadata
+     * GET /local-media/jobs/{job_id}
+     */
+    getLocalMediaJob(jobId: string, options?: RequestOptions): Promise<GetLocalMediaJobResponse>
+    /**
+     * Cancel a local job
+     * POST /local-media/jobs/{job_id}/cancel
+     */
+    cancelLocalMediaJob(jobId: string, body: CancelLocalMediaJobBody, options?: RequestOptions): Promise<CancelLocalMediaJobResponse>
+    /**
+     * Claim a job for this paired node
+     * POST /local-media/nodes/{node_id}/claim
+     */
+    claimLocalMediaJob(nodeId: string, body: ClaimLocalMediaJobBody, options?: RequestOptions): Promise<ClaimLocalMediaJobResponse>
+    /**
+     * Renew a local job lease
+     * POST /local-media/nodes/{node_id}/jobs/{job_id}/heartbeat
+     */
+    heartbeatLocalMediaJob(nodeId: string, jobId: string, body: HeartbeatLocalMediaJobBody, options?: RequestOptions): Promise<HeartbeatLocalMediaJobResponse>
+    /**
+     * Report a local output without uploading its bytes
+     * POST /local-media/nodes/{node_id}/jobs/{job_id}/complete
+     */
+    completeLocalMediaJob(nodeId: string, jobId: string, body: CompleteLocalMediaJobBody, options?: RequestOptions): Promise<CompleteLocalMediaJobResponse>
     /**
      * Create a media job
      * POST /media-jobs

@@ -218,3 +218,7 @@ npm pack --dry-run
 Generated API operations are maintained in the VidPlate application's SDK generator. This repository contains the generated source for each SDK release. The 0.1.0 release uses API schema 2026.11.02; newer API capabilities are not implied until a matching SDK release is published.
 
 See [CHANGELOG.md](CHANGELOG.md), [RELEASING.md](RELEASING.md) and [the API documentation](https://vidplate.app/developers/docs).
+
+### Static image processing
+
+Use `image_edit` or `image_collage` with `createMediaJob`. Resize/crop, rotate/flip, apply LUTs and photo adjustments, auto enhance without AI, add branding and export PNG/JPEG/WebP. See [the example](examples/static-image-processing.ts) and [API guide](https://vidplate.app/developers/docs/media-tools#static-images).

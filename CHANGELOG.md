@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 - 2026-11-03
+
+- Typed static image editing and collage requests: crop/resize, rotation/flips, photo adjustments and non-AI auto enhance.
+- LUT colour grading with intensity, PNG/text branding, and PNG/JPEG/WebP output controls.
+- Video frame extraction/contact sheets, transforms, overlays and background music controls.
+- Updated image-output response types and examples. Existing methods remain compatible.
+
 ## 0.1.0 - 2026-11-03
 
 Initial public Node.js and TypeScript SDK.

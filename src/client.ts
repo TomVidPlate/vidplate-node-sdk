@@ -16,7 +16,7 @@ import {
 import type { RequestOptions } from './options.ts'
 import { webhooks } from './webhooks.ts'
 
-export const SDK_VERSION = '0.1.0'
+export const SDK_VERSION = '0.2.0'
 
 export type FetchLike = (input: string, init: RequestInit) => Promise<Response>
 
