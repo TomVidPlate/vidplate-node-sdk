@@ -232,3 +232,12 @@ See [CHANGELOG.md](CHANGELOG.md), [RELEASING.md](RELEASING.md) and [the API docu
 ### Static image processing
 
 Use `image_edit` or `image_collage` with `createMediaJob`. Resize/crop, rotate/flip, apply LUTs and photo adjustments, auto enhance without AI, add branding and export PNG/JPEG/WebP. See [the example](examples/static-image-processing.ts) and [API guide](https://vidplate.app/developers/docs/media-tools#static-images).
+
+## Captions and pipelines
+
+
+Create animated captions or an SRT transcript with `createMediaJob`. Discover saved caption styles with `listCaptionPresets`. Caption settings include fonts, wrapping, backgrounds, animation, timing and an optional SRT output.
+
+Use `client.pipelines.estimate()`, `.create()`, `.get()`, `.outputs()`, `.cancel()` and `.retry()` to combine supported video and transcription steps with named output references. Pipeline availability depends on your workspace configuration. Image and template renders are separate requests.
+
+See [caption examples](https://vidplate.app/developers/docs/animated-captions) and [the API reference](https://vidplate.app/developers/docs/reference).

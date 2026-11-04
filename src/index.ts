@@ -25,3 +25,5 @@ export {
     type WebhookVerifyResult,
 } from './webhooks.ts'
 export * from './generated/operations.ts'
+
+export { PipelineApi, type Pipeline, type PipelineStatus, type PipelineRequest, type PipelineStep, type PipelineOutputReference } from './pipelines.ts'

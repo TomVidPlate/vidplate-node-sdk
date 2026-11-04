@@ -146,3 +146,30 @@ test('webhook verify: valid, rotated, tampered and stale', () => {
     assert.equal(event.type, 'render.completed')
     assert.throws(() => webhooks.constructEvent(body + ' ', header, secret, { nowSeconds: now }), /signature_mismatch/)
 })
+
+test('pipeline helpers preserve named references and use stable idempotency across a retry', async () => {
+    const pipeline = { object: 'pipeline', id: 'pip_example', status: 'running', steps: [], progress: { completed: 0, total: 1, percent: 0 }, deliverables: {} }
+    const m = mockFetch([json(503, { error: { code: 'service_unavailable', message: 'retry' } }), json(202, pipeline), json(200, pipeline)])
+    const api = client(m.fetch)
+    const request = { steps: [{ id: 'edit', request: { operation: 'resize' as const, inputs: [{ upload_id: 'upl_source' }], outputs: [{ width: 3840, height: 2160 }] }, outputs: { video: 0 } }], deliverables: { master: { step: 'edit', output: 'video' } } }
+    assert.equal((await api.pipelines.create(request, { idempotencyKey: 'pipeline-customer-17' })).id, pipeline.id)
+    assert.equal(m.calls.length, 2)
+    assert.equal(m.calls[0].headers['Idempotency-Key'], 'pipeline-customer-17')
+    assert.equal(m.calls[1].headers['Idempotency-Key'], 'pipeline-customer-17')
+    assert.deepEqual(JSON.parse(String(m.calls[0].init.body)), request)
+    await api.pipelines.get(pipeline.id)
+    assert.ok(m.calls[2].url.endsWith('/pipelines/pip_example'))
+})
+
+
+test('caption requests and saved-preset discovery preserve the published contract', async () => {
+    const m = mockFetch([json(202, {id:'mjb_captions',status:'queued'}),json(200,{object:'list',data:[]})])
+    const api = client(m.fetch)
+    await api.createMediaJob({operation:'captions',inputs:[{upload_id:'upl_source'}],captions:{preset:'social-bold',source:'words',words:[{text:'Hello',start:0,end:1}],include_srt:true,overrides:{max_lines:2,animation:{type:'highlight',apply_to:'word',speed:55,intensity:75}}},outputs:[{codec:'h264',width:3840,height:2160,fps:30}]})
+    const body = JSON.parse(String(m.calls[0].init.body))
+    assert.equal(body.operation,'captions')
+    assert.equal(body.captions.preset,'social-bold')
+    assert.equal(body.captions.include_srt,true)
+    await api.listCaptionPresets()
+    assert.ok(m.calls[1].url.endsWith('/caption-presets'))
+})

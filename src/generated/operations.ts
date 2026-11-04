@@ -3,7 +3,7 @@
 
 import type { RequestOptions } from '../options.ts'
 
-export const API_VERSION = "2026.11.03"
+export const API_VERSION = "2026.11.04"
 export const DEFAULT_BASE_URL = "https://api.vidplate.app/v1"
 
 /** Every status value the spec lists, per schema (from components.schemas.<Name>.properties.status.enum). */
@@ -396,7 +396,7 @@ export type WebhookEndpoint = {
     id?: string
     url?: string
     description?: string | null
-    events?: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired">
+    events?: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "pipeline.completed" | "pipeline.failed" | "pipeline.cancelled" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired">
     enabled?: boolean
     disabled_reason?: string | null
     last_success_at?: string | null
@@ -410,7 +410,7 @@ export type WebhookEndpoint = {
 export type WebhookEvent = {
     /** evt_...: de-duplicate on this. */
     id?: string
-    type?: "render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired" | "ping"
+    type?: "render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "pipeline.completed" | "pipeline.failed" | "pipeline.cancelled" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired" | "ping"
     created_at?: string
     api_version?: "v1"
     data?: { [key: string]: unknown }
@@ -607,7 +607,7 @@ export type WebhookEndpointList = {
 export type MediaJob = {
     object?: "media_job"
     id?: string
-    operation?: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
+    operation?: "transcribe" | "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "captions" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
     status?: "queued" | "waiting_for_input" | "waiting_for_node" | "rendering" | "completed" | "failed" | "expired" | "cancelled"
     waiting_reason?: string
     created_at?: string | null
@@ -633,7 +633,7 @@ export type MediaJob = {
         id?: string
         index?: number
         settings_index?: number
-        kind?: "video" | "animated_image" | "image"
+        kind?: "video" | "animated_image" | "image" | "subtitle"
         status?: "queued" | "waiting_for_input" | "waiting_for_node" | "rendering" | "completed" | "failed" | "expired" | "cancelled"
         width?: number | null
         height?: number | null
@@ -729,7 +729,7 @@ export type GetTemplateVersionSchemaResponse = { [key: string]: unknown }
 
 export type CreateUploadBody = {
     filename: string
-    content_type: "image/png" | "image/jpeg" | "image/webp" | "model/gltf-binary" | "video/mp4" | "video/quicktime" | "video/webm" | "audio/mpeg" | "audio/mp4" | "audio/x-m4a" | "audio/aac" | "audio/wav" | "audio/x-wav" | "audio/ogg"
+    content_type: "font/ttf" | "font/otf" | "font/woff" | "font/woff2" | "image/png" | "image/jpeg" | "image/webp" | "model/gltf-binary" | "video/mp4" | "video/quicktime" | "video/webm" | "audio/mpeg" | "audio/mp4" | "audio/x-m4a" | "audio/aac" | "audio/wav" | "audio/x-wav" | "audio/ogg"
     size_bytes: number
     purpose?: "render_input"
 }
@@ -1119,7 +1119,7 @@ export type ListWebhookEndpointsResponse = WebhookEndpointList
 export type CreateWebhookEndpointBody = {
     /** HTTPS only. Private, loopback and VidPlate addresses are refused. */
     url: string
-    events: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired">
+    events: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "pipeline.completed" | "pipeline.failed" | "pipeline.cancelled" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired">
     description?: string | null
 }
 
@@ -1140,7 +1140,7 @@ export type UpdateWebhookEndpointPathParams = {
 export type UpdateWebhookEndpointBody = {
     /** HTTPS only. Private, loopback and VidPlate addresses are refused. */
     url?: string
-    events?: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired">
+    events?: Array<"render.completed" | "render.failed" | "render.waiting_for_node" | "render.expired" | "render.progress" | "template.version.published" | "render_node.online" | "render_node.offline" | "output.delivered" | "output.delivery_failed" | "pipeline.completed" | "pipeline.failed" | "pipeline.cancelled" | "media_job.completed" | "media_job.failed" | "media_job.waiting_for_node" | "media_job.expired" | "media_job.progress" | "local_media_job.completed" | "local_media_job.failed" | "local_media_job.cancelled" | "local_media_job.expired">
     description?: string | null
     enabled?: boolean
 }
@@ -1172,6 +1172,17 @@ export type TestWebhookEndpointPathParams = {
 export type TestWebhookEndpointResponse = { [key: string]: unknown }
 
 export type ListRenderPresetsResponse = RenderPresetList
+
+export type ListCaptionPresetsResponse = {
+    object?: "list"
+    data?: Array<{
+        id?: string
+        code?: string
+        name?: string
+        revision?: number
+        settings?: { [key: string]: unknown }
+    }>
+}
 
 export type ListStorageDestinationsResponse = StorageDestinationList
 
@@ -1376,9 +1387,205 @@ export type CompleteLocalMediaJobBody = {
 
 export type CompleteLocalMediaJobResponse = { [key: string]: unknown }
 
+export type EstimatePipelineBody = {
+    steps: Array<{
+        id: string
+        request: { [key: string]: unknown }
+        outputs: { [key: string]: number }
+    }>
+    deliverables: { [key: string]: {
+        step: string
+        output: string
+    } }
+}
+
+export type EstimatePipelineResponse = {
+    object?: "pipeline"
+    id?: string
+    status?: "creating" | "running" | "completed" | "partially_completed" | "failed" | "cancelled" | "submission_failed"
+    created_at?: string
+    progress?: {
+        completed?: number
+        total?: number
+        percent?: number
+    }
+    steps?: Array<{
+        id?: string
+        media_job_id?: string | null
+        status?: string
+        fused_into?: string
+        outputs?: { [key: string]: unknown }
+    }>
+    deliverables?: { [key: string]: unknown }
+    error?: {
+        code?: string
+        message?: string
+    }
+}
+
+export type CreatePipelineBody = {
+    steps: Array<{
+        id: string
+        request: { [key: string]: unknown }
+        outputs: { [key: string]: number }
+    }>
+    deliverables: { [key: string]: {
+        step: string
+        output: string
+    } }
+}
+
+export type CreatePipelineResponse = {
+    object?: "pipeline"
+    id?: string
+    status?: "creating" | "running" | "completed" | "partially_completed" | "failed" | "cancelled" | "submission_failed"
+    created_at?: string
+    progress?: {
+        completed?: number
+        total?: number
+        percent?: number
+    }
+    steps?: Array<{
+        id?: string
+        media_job_id?: string | null
+        status?: string
+        fused_into?: string
+        outputs?: { [key: string]: unknown }
+    }>
+    deliverables?: { [key: string]: unknown }
+    error?: {
+        code?: string
+        message?: string
+    }
+}
+
+export type GetPipelinePathParams = {
+    /** Pipeline ID. */
+    pipeline_id: string
+}
+
+export type GetPipelineResponse = {
+    object?: "pipeline"
+    id?: string
+    status?: "creating" | "running" | "completed" | "partially_completed" | "failed" | "cancelled" | "submission_failed"
+    created_at?: string
+    progress?: {
+        completed?: number
+        total?: number
+        percent?: number
+    }
+    steps?: Array<{
+        id?: string
+        media_job_id?: string | null
+        status?: string
+        fused_into?: string
+        outputs?: { [key: string]: unknown }
+    }>
+    deliverables?: { [key: string]: unknown }
+    error?: {
+        code?: string
+        message?: string
+    }
+}
+
+export type GetPipelineOutputsPathParams = {
+    /** Pipeline ID. */
+    pipeline_id: string
+}
+
+export type GetPipelineOutputsQuery = {
+    expires_in?: number
+}
+
+export type GetPipelineOutputsResponse = {
+    object?: "pipeline"
+    id?: string
+    status?: "creating" | "running" | "completed" | "partially_completed" | "failed" | "cancelled" | "submission_failed"
+    created_at?: string
+    progress?: {
+        completed?: number
+        total?: number
+        percent?: number
+    }
+    steps?: Array<{
+        id?: string
+        media_job_id?: string | null
+        status?: string
+        fused_into?: string
+        outputs?: { [key: string]: unknown }
+    }>
+    deliverables?: { [key: string]: unknown }
+    error?: {
+        code?: string
+        message?: string
+    }
+}
+
+export type CancelPipelinePathParams = {
+    /** Pipeline ID. */
+    pipeline_id: string
+}
+
+export type CancelPipelineResponse = {
+    object?: "pipeline"
+    id?: string
+    status?: "creating" | "running" | "completed" | "partially_completed" | "failed" | "cancelled" | "submission_failed"
+    created_at?: string
+    progress?: {
+        completed?: number
+        total?: number
+        percent?: number
+    }
+    steps?: Array<{
+        id?: string
+        media_job_id?: string | null
+        status?: string
+        fused_into?: string
+        outputs?: { [key: string]: unknown }
+    }>
+    deliverables?: { [key: string]: unknown }
+    error?: {
+        code?: string
+        message?: string
+    }
+}
+
+export type RetryPipelinePathParams = {
+    /** Pipeline ID. */
+    pipeline_id: string
+}
+
+export type RetryPipelineResponse = {
+    object?: "pipeline"
+    id?: string
+    status?: "creating" | "running" | "completed" | "partially_completed" | "failed" | "cancelled" | "submission_failed"
+    created_at?: string
+    progress?: {
+        completed?: number
+        total?: number
+        percent?: number
+    }
+    steps?: Array<{
+        id?: string
+        media_job_id?: string | null
+        status?: string
+        fused_into?: string
+        outputs?: { [key: string]: unknown }
+    }>
+    deliverables?: { [key: string]: unknown }
+    error?: {
+        code?: string
+        message?: string
+    }
+}
+
 export type CreateMediaJobBody = {
+    transcription?: {
+        /** Whisper language code, or auto detection. Original language transcription only. */
+        language?: string
+    }
     /** Video edits, rotate/flip, overlays, music, LUTs, frame grabs, contact sheets, static image editing and collages. */
-    operation: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
+    operation: "transcribe" | "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "captions" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
     /** The sources. One for most operations; combine takes 2 to 20 videos, image_collage takes up to 20 images. */
     inputs: Array<{
         /** A ready upload (POST /uploads). Video is probed when the upload is completed. */
@@ -1582,8 +1789,75 @@ export type CreateMediaJobBody = {
     intro?: { [key: string]: unknown } | Array<unknown>
     /** A clip after the main video. Not available yet. */
     outro?: { [key: string]: unknown } | Array<unknown>
-    /** Not available yet. */
-    captions?: { [key: string]: unknown } | Array<unknown>
+    captions?: {
+        /** Saved caption preset code from this workspace. Request overrides win; submitted jobs keep a settings snapshot. */
+        preset?: string
+        include_srt?: boolean
+        source?: "transcribe" | "words" | "srt"
+        language?: string
+        style?: "plain" | "glass_highlight" | "clean" | "boxed" | "karaoke" | "pop" | "bold_outline"
+        words?: Array<{
+            text: string
+            start: number
+            end: number
+        }>
+        srt?: string
+        overrides?: {
+            appearance?: {
+                backgroundStyle?: "none" | "glass" | "solid" | "gradient"
+                boxFit?: "block" | "line"
+                align?: "left" | "center" | "right"
+                backgroundColor?: string
+                gradientFrom?: string
+                gradientTo?: string
+                textShadowColor?: string
+                textGlowColor?: string
+                textOutlineColor?: string
+                backgroundShadowColor?: string
+                backgroundGlowColor?: string
+                backgroundOutlineColor?: string
+                lineHeight?: number
+                leading?: number
+                cornerRadius?: number
+                glassOpacity?: number
+                glassLightAngle?: number
+                glassLightIntensity?: number
+                glassRefraction?: number
+                glassDepth?: number
+                glassFrost?: number
+                glassSplay?: number
+                textShadowBlur?: number
+                textShadowOffsetX?: number
+                textShadowOffsetY?: number
+                textGlowBlur?: number
+                textOutlineWidth?: number
+                backgroundShadowBlur?: number
+                backgroundShadowOffsetX?: number
+                backgroundShadowOffsetY?: number
+                backgroundGlowBlur?: number
+                backgroundOutlineWidth?: number
+            }
+            font_family?: "Inter" | "Poppins" | "Montserrat" | "Roboto" | "Lato" | "Merriweather" | "Playfair Display" | "Bebas Neue" | "Great Vibes" | "Dancing Script" | "Pacifico" | "Satisfy" | "Allura" | "Indie Flower" | "Patrick Hand" | "Caveat"
+            font_upload_id?: string
+            max_words_per_cue?: number
+            max_lines?: 1 | 2
+            position?: "lower_third" | "centre" | "top"
+            case?: "as_typed" | "upper"
+            font_size?: number
+            timing_offset_seconds?: number
+            colours?: {
+                text?: string
+                highlight?: string
+                background?: string
+            }
+            animation?: {
+                speed?: number
+                intensity?: number
+                type?: "none" | "fade" | "rise" | "drop" | "bounce" | "scale" | "shake" | "typewriter" | "highlight"
+                apply_to?: "all" | "word"
+            }
+        }
+    }
     audio?: {
         /** A ready audio upload. */
         upload_id: string
@@ -1707,7 +1981,7 @@ export type CreateMediaJobBody = {
 export type CreateMediaJobResponse = MediaJob
 
 export type ListMediaJobsQuery = {
-    operation?: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
+    operation?: "transcribe" | "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "captions" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
     status?: "queued" | "waiting_for_input" | "waiting_for_node" | "rendering" | "completed" | "failed" | "expired" | "cancelled"
     external_reference?: string
     created_after?: string
@@ -1726,8 +2000,12 @@ export type ListMediaJobsResponse = {
 }
 
 export type EstimateMediaJobBody = {
+    transcription?: {
+        /** Whisper language code, or auto detection. Original language transcription only. */
+        language?: string
+    }
     /** Video edits, rotate/flip, overlays, music, LUTs, frame grabs, contact sheets, static image editing and collages. */
-    operation: "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
+    operation: "transcribe" | "trim" | "crop" | "resize" | "combine" | "compress" | "convert" | "speed" | "image_edit" | "image_collage" | "transform" | "colour" | "overlay" | "captions" | "audio" | "frame_grab" | "contact_sheet" | "image_crop" | "scene_detect" | "split"
     /** The sources. One for most operations; combine takes 2 to 20 videos, image_collage takes up to 20 images. */
     inputs: Array<{
         /** A ready upload (POST /uploads). Video is probed when the upload is completed. */
@@ -1931,8 +2209,75 @@ export type EstimateMediaJobBody = {
     intro?: { [key: string]: unknown } | Array<unknown>
     /** A clip after the main video. Not available yet. */
     outro?: { [key: string]: unknown } | Array<unknown>
-    /** Not available yet. */
-    captions?: { [key: string]: unknown } | Array<unknown>
+    captions?: {
+        /** Saved caption preset code from this workspace. Request overrides win; submitted jobs keep a settings snapshot. */
+        preset?: string
+        include_srt?: boolean
+        source?: "transcribe" | "words" | "srt"
+        language?: string
+        style?: "plain" | "glass_highlight" | "clean" | "boxed" | "karaoke" | "pop" | "bold_outline"
+        words?: Array<{
+            text: string
+            start: number
+            end: number
+        }>
+        srt?: string
+        overrides?: {
+            appearance?: {
+                backgroundStyle?: "none" | "glass" | "solid" | "gradient"
+                boxFit?: "block" | "line"
+                align?: "left" | "center" | "right"
+                backgroundColor?: string
+                gradientFrom?: string
+                gradientTo?: string
+                textShadowColor?: string
+                textGlowColor?: string
+                textOutlineColor?: string
+                backgroundShadowColor?: string
+                backgroundGlowColor?: string
+                backgroundOutlineColor?: string
+                lineHeight?: number
+                leading?: number
+                cornerRadius?: number
+                glassOpacity?: number
+                glassLightAngle?: number
+                glassLightIntensity?: number
+                glassRefraction?: number
+                glassDepth?: number
+                glassFrost?: number
+                glassSplay?: number
+                textShadowBlur?: number
+                textShadowOffsetX?: number
+                textShadowOffsetY?: number
+                textGlowBlur?: number
+                textOutlineWidth?: number
+                backgroundShadowBlur?: number
+                backgroundShadowOffsetX?: number
+                backgroundShadowOffsetY?: number
+                backgroundGlowBlur?: number
+                backgroundOutlineWidth?: number
+            }
+            font_family?: "Inter" | "Poppins" | "Montserrat" | "Roboto" | "Lato" | "Merriweather" | "Playfair Display" | "Bebas Neue" | "Great Vibes" | "Dancing Script" | "Pacifico" | "Satisfy" | "Allura" | "Indie Flower" | "Patrick Hand" | "Caveat"
+            font_upload_id?: string
+            max_words_per_cue?: number
+            max_lines?: 1 | 2
+            position?: "lower_third" | "centre" | "top"
+            case?: "as_typed" | "upper"
+            font_size?: number
+            timing_offset_seconds?: number
+            colours?: {
+                text?: string
+                highlight?: string
+                background?: string
+            }
+            animation?: {
+                speed?: number
+                intensity?: number
+                type?: "none" | "fade" | "rise" | "drop" | "bounce" | "scale" | "shake" | "typewriter" | "highlight"
+                apply_to?: "all" | "word"
+            }
+        }
+    }
     audio?: {
         /** A ready audio upload. */
         upload_id: string
@@ -2734,6 +3079,23 @@ export const OPERATIONS = {
         "successStatus": 200,
         "extensions": {}
     },
+    listCaptionPresets: {
+        "method": "GET",
+        "path": "/caption-presets",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false,
+        "bodyRequired": false,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "List this workspace’s saved caption presets",
+        "deprecated": false,
+        "scopes": [
+            "renders:read"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
     listStorageDestinations: {
         "method": "GET",
         "path": "/storage-destinations",
@@ -3026,6 +3388,123 @@ export const OPERATIONS = {
         "deprecated": false,
         "scopes": [
             "local_media:node"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    estimatePipeline: {
+        "method": "POST",
+        "path": "/pipelines/estimate",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true,
+        "bodyRequired": true,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Validate and estimate a complete media pipeline",
+        "deprecated": false,
+        "scopes": [
+            "renders:read"
+        ],
+        "successStatus": 200,
+        "extensions": {
+            "x-dry-run": true
+        }
+    },
+    createPipeline: {
+        "method": "POST",
+        "path": "/pipelines",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true,
+        "bodyRequired": true,
+        "idempotency": "required",
+        "tag": "Media jobs",
+        "summary": "Submit named media steps and final deliverables",
+        "deprecated": false,
+        "scopes": [
+            "renders:write"
+        ],
+        "successStatus": 202,
+        "extensions": {}
+    },
+    getPipeline: {
+        "method": "GET",
+        "path": "/pipelines/{pipeline_id}",
+        "pathParams": [
+            "pipeline_id"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "bodyRequired": false,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Get pipeline and step progress",
+        "deprecated": false,
+        "scopes": [
+            "renders:read"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    getPipelineOutputs: {
+        "method": "GET",
+        "path": "/pipelines/{pipeline_id}/outputs",
+        "pathParams": [
+            "pipeline_id"
+        ],
+        "queryParams": [
+            {
+                "name": "expires_in",
+                "required": false
+            }
+        ],
+        "hasBody": false,
+        "bodyRequired": false,
+        "idempotency": "none",
+        "tag": "Media jobs",
+        "summary": "Get named final output links",
+        "deprecated": false,
+        "scopes": [
+            "renders:read"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    cancelPipeline: {
+        "method": "POST",
+        "path": "/pipelines/{pipeline_id}/cancel",
+        "pathParams": [
+            "pipeline_id"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "bodyRequired": false,
+        "idempotency": "required",
+        "tag": "Media jobs",
+        "summary": "Cancel a pipeline",
+        "deprecated": false,
+        "scopes": [
+            "renders:write"
+        ],
+        "successStatus": 200,
+        "extensions": {}
+    },
+    retryPipeline: {
+        "method": "POST",
+        "path": "/pipelines/{pipeline_id}/retry",
+        "pathParams": [
+            "pipeline_id"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "bodyRequired": false,
+        "idempotency": "required",
+        "tag": "Media jobs",
+        "summary": "Retry failed work in a pipeline",
+        "deprecated": false,
+        "scopes": [
+            "renders:write"
         ],
         "successStatus": 200,
         "extensions": {}
@@ -3482,6 +3961,14 @@ export interface OperationTypes {
         queryRequired: false
         bodyRequired: false
     }
+    listCaptionPresets: {
+        path: never
+        query: never
+        body: never
+        response: ListCaptionPresetsResponse
+        queryRequired: false
+        bodyRequired: false
+    }
     listStorageDestinations: {
         path: never
         query: never
@@ -3609,6 +4096,54 @@ export interface OperationTypes {
         response: CompleteLocalMediaJobResponse
         queryRequired: false
         bodyRequired: true
+    }
+    estimatePipeline: {
+        path: never
+        query: never
+        body: EstimatePipelineBody
+        response: EstimatePipelineResponse
+        queryRequired: false
+        bodyRequired: true
+    }
+    createPipeline: {
+        path: never
+        query: never
+        body: CreatePipelineBody
+        response: CreatePipelineResponse
+        queryRequired: false
+        bodyRequired: true
+    }
+    getPipeline: {
+        path: GetPipelinePathParams
+        query: never
+        body: never
+        response: GetPipelineResponse
+        queryRequired: false
+        bodyRequired: false
+    }
+    getPipelineOutputs: {
+        path: GetPipelineOutputsPathParams
+        query: GetPipelineOutputsQuery
+        body: never
+        response: GetPipelineOutputsResponse
+        queryRequired: false
+        bodyRequired: false
+    }
+    cancelPipeline: {
+        path: CancelPipelinePathParams
+        query: never
+        body: never
+        response: CancelPipelineResponse
+        queryRequired: false
+        bodyRequired: false
+    }
+    retryPipeline: {
+        path: RetryPipelinePathParams
+        query: never
+        body: never
+        response: RetryPipelineResponse
+        queryRequired: false
+        bodyRequired: false
     }
     createMediaJob: {
         path: never
@@ -3849,6 +4384,11 @@ export interface OperationMethods {
      */
     listRenderPresets(options?: RequestOptions): Promise<ListRenderPresetsResponse>
     /**
+     * List this workspace’s saved caption presets
+     * GET /caption-presets
+     */
+    listCaptionPresets(options?: RequestOptions): Promise<ListCaptionPresetsResponse>
+    /**
      * List storage destinations
      * GET /storage-destinations
      */
@@ -3931,6 +4471,39 @@ export interface OperationMethods {
      * POST /local-media/nodes/{node_id}/jobs/{job_id}/complete
      */
     completeLocalMediaJob(nodeId: string, jobId: string, body: CompleteLocalMediaJobBody, options?: RequestOptions): Promise<CompleteLocalMediaJobResponse>
+    /**
+     * Validate and estimate a complete media pipeline
+     * POST /pipelines/estimate
+     */
+    estimatePipeline(body: EstimatePipelineBody, options?: RequestOptions): Promise<EstimatePipelineResponse>
+    /**
+     * Submit named media steps and final deliverables
+     * POST /pipelines
+     * Idempotency-Key: required (sent automatically).
+     */
+    createPipeline(body: CreatePipelineBody, options?: RequestOptions): Promise<CreatePipelineResponse>
+    /**
+     * Get pipeline and step progress
+     * GET /pipelines/{pipeline_id}
+     */
+    getPipeline(pipelineId: string, options?: RequestOptions): Promise<GetPipelineResponse>
+    /**
+     * Get named final output links
+     * GET /pipelines/{pipeline_id}/outputs
+     */
+    getPipelineOutputs(pipelineId: string, query?: GetPipelineOutputsQuery, options?: RequestOptions): Promise<GetPipelineOutputsResponse>
+    /**
+     * Cancel a pipeline
+     * POST /pipelines/{pipeline_id}/cancel
+     * Idempotency-Key: required (sent automatically).
+     */
+    cancelPipeline(pipelineId: string, options?: RequestOptions): Promise<CancelPipelineResponse>
+    /**
+     * Retry failed work in a pipeline
+     * POST /pipelines/{pipeline_id}/retry
+     * Idempotency-Key: required (sent automatically).
+     */
+    retryPipeline(pipelineId: string, options?: RequestOptions): Promise<RetryPipelineResponse>
     /**
      * Create a media job
      * POST /media-jobs

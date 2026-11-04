@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { PipelineApi } from './pipelines.ts'
 
 import { VidPlateError, VidPlateWaitTimeoutError } from './errors.ts'
 import {
@@ -16,7 +17,7 @@ import {
 import type { RequestOptions } from './options.ts'
 import { webhooks } from './webhooks.ts'
 
-export const SDK_VERSION = '0.2.2'
+export const SDK_VERSION = '0.3.0'
 
 export type FetchLike = (input: string, init: RequestInit) => Promise<Response>
 
@@ -114,6 +115,7 @@ export class VidPlateClient {
     readonly maxRetries: number
     readonly timeoutMs: number
     readonly webhooks = webhooks
+    readonly pipelines = new PipelineApi(this)
 
     private readonly apiKey: string
     private readonly fetchImpl: FetchLike
