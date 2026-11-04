@@ -1,0 +1,2 @@
+import OrderForm from './OrderForm'
+export default function Page(){return <main><nav className='example-brand'><svg viewBox='0 0 92 83' aria-hidden='true'><path fill='currentColor' d='M53.466 77.374c-3.56 6.119-12.458 6.119-16.017 0L1.402 15.41C-1.76 9.974.725 3.459 5.87 1.003c1.978-.945 12.6-1.027 12.394 1.141-1.21 12.736.437 20.389 8.46 20.856 7.479.436 15.702-5.772 18.143-14.995A10.86 10.86 0 0 1 55.36 0h27.099c7.119 0 11.568 7.649 8.009 13.767Z'/></svg>VidPlate <strong>API</strong><span>Template order form</span></nav><OrderForm/></main>}

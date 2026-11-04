@@ -18,6 +18,16 @@ A small, typed client for the VidPlate API (`https://api.vidplate.app/v1`). Ever
 
 Node 18 or newer (uses the global `fetch`). No runtime dependencies.
 
+## Ready-made React order form
+
+[React components and source](react/README.md) ? [Next.js example](examples/next-order-form/README.md) ? [Interactive demo](https://vidplate.app/developers/docs/order-form-kit)
+
+Add a VidPlate-styled template picker and dynamic order form to your platform, with uploads, output sizes, render progress, downloads and **Powered by VidPlate** branding. The form reads the published template field contract and pins the version it submits.
+
+![Desktop template picker and generated order form with content, colours, media uploads, output sizes and Powered by VidPlate attribution.](react/assets/order-form-desktop.png)
+
+Actual runnable component UI with fictional example data. The React kit is a **source preview**, not yet on npm. Its backend example keeps the API key on your server. Follow its README to connect your own authentication and durable per-user access storage before a production integration. The Node SDK below remains a separate package.
+
 ## How it works
 
 ![Your server sends a template request, VidPlate queues the job, your Browser Node renders it, and your application collects the files.](docs/assets/render-workflow.svg)

@@ -1,0 +1,31 @@
+name: React order form kit
+on:
+  push:
+    branches: [main]
+    paths: ['react/**', 'examples/next-order-form/**', '.github/workflows/react-kit.yml']
+  pull_request:
+    paths: ['react/**', 'examples/next-order-form/**', '.github/workflows/react-kit.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            react/package-lock.json
+            examples/next-order-form/package-lock.json
+      - run: npm ci
+        working-directory: react
+      - run: npm test
+        working-directory: react
+      - run: npm ci --install-links
+        working-directory: examples/next-order-form
+      - run: npm run build
+        working-directory: examples/next-order-form
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
