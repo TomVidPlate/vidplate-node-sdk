@@ -31,4 +31,4 @@ The example is deliberately a **single authenticated account**. Before incorpora
 
 The example's origin check blocks cross-origin writes. All gateway responses are `no-store`. Template versions are pinned when the form opens; schema validation and media ownership are checked again on submission. Render submissions reuse their idempotency key after a timeout. Changing the form creates a new request; clicking “Create another” starts a new order.
 
-No API calls are made during `next build`. Build with `npm run build` and start with `npm start`. The source kit is prepared locally; `@vidplate/react` has not yet been published to npm.
+No API calls are made during `next build`. Build with `npm run build` and start with `npm start`. This example uses the kit's local source package so you can edit it. For an existing React app, install the published package with `npm install @vidplate/react` instead.

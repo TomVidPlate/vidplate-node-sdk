@@ -26,7 +26,7 @@ Add a VidPlate-styled template picker and dynamic order form to your platform, w
 
 ![Desktop template picker and generated order form with content, colours, media uploads, output sizes and Powered by VidPlate attribution.](react/assets/order-form-desktop.png)
 
-Actual runnable component UI with fictional example data. The React kit is a **source preview**, not yet on npm. Its backend example keeps the API key on your server. Follow its README to connect your own authentication and durable per-user access storage before a production integration. The Node SDK below remains a separate package.
+Actual runnable component UI with fictional example data. Install the React kit with **`npm install @vidplate/react`**. Its backend example keeps the API key on your server. Follow its README to connect your own authentication and durable per-user access storage before a production integration. The Node SDK below remains a separate package.
 
 ## How it works
 

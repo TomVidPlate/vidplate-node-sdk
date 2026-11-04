@@ -2,9 +2,9 @@
 
 Reusable, VidPlate-styled UI for choosing a template and ordering rendered content. Uses Montserrat, the VidPlate API navy/blue palette and a visible **Powered by VidPlate** link. MIT licensed; bundled Montserrat uses the SIL Open Font License.
 
-**Source preview:** version 0.1.0 is available as source and is not yet published to npm. Use the source kit or the [Next.js example](../examples/next-order-form/README.md). The Node SDK is a separate package and is not required by this kit.
+**Install:** `npm install @vidplate/react`. Supports React 18 and 19. See the [live demo and guide](https://vidplate.app/developers/docs/order-form-kit) and [Next.js example](https://github.com/TomVidPlate/vidplate-node-sdk/tree/main/examples/next-order-form). The Node SDK is a separate package and is not required by this kit.
 
-![Desktop VidPlate template picker and generated order form, including media uploads, output sizes and Powered by VidPlate branding.](assets/order-form-desktop.png)
+![Desktop VidPlate template picker and generated order form, including media uploads, output sizes and Powered by VidPlate branding.](https://raw.githubusercontent.com/TomVidPlate/vidplate-node-sdk/main/react/assets/order-form-desktop.png)
 
 Actual runnable component UI with fictional example data. [Try the interactive demo](https://vidplate.app/developers/docs/order-form-kit).
 
